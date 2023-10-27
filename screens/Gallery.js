@@ -27,9 +27,9 @@ export default function Gallery({ navigation }) {
   const [hasMediaLibraryPermission, setHasMediaLibraryPermissions] = useState();
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
-
+  const [isLoading,Setloading]=useState(false);
   /*const db=SQLite.openDatabase('Pics.db');
-  const [isLoading,Setloading]=useState(true);
+ 
   const [dummy,SetDummy]=useState([]);
 
   useEffect(()=>{
