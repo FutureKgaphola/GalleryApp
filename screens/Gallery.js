@@ -143,6 +143,7 @@ useEffect(()=>{
   }else{
     return (
       <SafeAreaView style={styles.container}>
+        <Text style={{alignSelf:"center",margin:10,fontSize:25,fontWeight:"700"}}>Gallery App</Text>
         <FlatList
           numColumns={3}
           data={image}
