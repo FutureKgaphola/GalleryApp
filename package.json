@@ -13,9 +13,14 @@
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.16",
     "expo": "~49.0.15",
+    "expo-asset": "~8.10.1",
     "expo-camera": "~13.4.4",
+    "expo-file-system": "~15.4.4",
+    "expo-image-picker": "~14.3.2",
+    "expo-location": "~16.1.0",
     "expo-media-library": "~15.4.1",
     "expo-sharing": "~11.5.0",
+    "expo-sqlite": "~11.3.3",
     "expo-status-bar": "~1.6.0",
     "moment": "^2.29.4",
     "react": "18.2.0",
@@ -27,11 +32,7 @@
     "react-native-screens": "~3.22.0",
     "react-native-vector-icons": "^10.0.0",
     "react-native-web": "~0.19.6",
-    "uuid": "^9.0.1",
-    "expo-location": "~16.1.0",
-    "expo-sqlite": "~11.3.3",
-    "expo-file-system": "~15.4.4",
-    "expo-asset": "~8.10.1"
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

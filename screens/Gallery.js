@@ -20,7 +20,7 @@ import * as Location from "expo-location";
 import * as SQLite from 'expo-sqlite';
 
 export default function Gallery({ navigation }) {
-  const { pictures, SetPictures, preview, Setpreview,setaddress } =
+  const { Setpreview,setaddress } =
     useContext(PhotoContext);
   let cameraRef = useRef();
   const [hasCameraPermission, setHasCameraPermissions] = useState();
@@ -28,15 +28,32 @@ export default function Gallery({ navigation }) {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [isLoading,Setloading]=useState(false);
-  /*const db=SQLite.openDatabase('Pics.db');
- 
-  const [dummy,SetDummy]=useState([]);
+  
+  const [image, setImage] = useState([]);
+// Function to retrieve and display stored images with dates
+const db = SQLite.openDatabase('G_PicsDB.db');
+const displayStoredImages = () => {
+  
+  db.transaction(tx => {
+    tx.executeSql('SELECT * FROM images', [], (tx, results) => {
+      const images = [];
+      for (let i = 0; i < results.rows.length; i++) {
+        const item = results.rows.item(i);
+        images.push({
+          data: item.data,
+          capture_date: item.capture_date,
+          location:item.location,
+          id:item.id
+        });
+      }
+      setImage(images);
+    });
+  });
+};
 
-  useEffect(()=>{
-    db.transaction(tx=>
-      tx.executeSql('CREATE TABLE IF NOT EXISTS mypictures (id INTEGER PRIMARY KEY AUTOINCREMENT,key TEXT,dateTaken TEXT,location TEXT,img TEXT)')
-    )
-  },[])*/
+useEffect(()=>{
+  displayStoredImages();
+})
 
   useEffect(() => {
     (async () => {
@@ -105,7 +122,17 @@ export default function Gallery({ navigation }) {
     navigation.navigate("Preview");
   };
   const DeleteImg = (id) => {
-    SetPictures((pictures) => pictures.filter((pic) => pic.key !== id));
+    db.transaction(tx => {
+      tx.executeSql('DELETE FROM images WHERE id = ?', [id], (tx, results) => {
+        if (results.rowsAffected > 0) {
+          Alert.alert('Image deleted successfully!');
+          displayStoredImages();
+        } else {
+          Alert.alert('Image deletion failed.');
+        }
+      });
+    });
+    //SetPictures((image) => image.filter((pic) => pic.id !== id));
   };
   if(isLoading==true){
     return (
@@ -118,7 +145,7 @@ export default function Gallery({ navigation }) {
       <SafeAreaView style={styles.container}>
         <FlatList
           numColumns={3}
-          data={pictures}
+          data={image}
           renderItem={({ item }) => (
             <View
               style={{
@@ -133,7 +160,7 @@ export default function Gallery({ navigation }) {
                   Alert.alert("Warning", "You are about to delete this image", [
                     {
                       text: "Delete",
-                      onPress: () => DeleteImg(item.key),
+                      onPress: () => DeleteImg(item.id),
                     },
                     {
                       text: "Keep",
@@ -144,7 +171,7 @@ export default function Gallery({ navigation }) {
               >
                 <Image
                   style={{ width: "100%", height: 250 }}
-                  source={{ uri: item.img }}
+                  source={{ uri: item.data }}
                 />
               </TouchableOpacity>
             </View>

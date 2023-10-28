@@ -4,18 +4,28 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { PhotoContext } from "../Manager/PhotoState";
 import { Ionicons } from "@expo/vector-icons";
-
+import * as SQLite from 'expo-sqlite';
 const Preview = ({ navigation }) => {
-  const { preview, Setpreview, pictures, SetPictures } =
+  const { preview, Setpreview} =
     useContext(PhotoContext);
 
   const [ShowDelete, setShowDelete] = useState(false);
-  const { key, img, location, dateTaken } = preview;
+  const { id, data, location, capture_date } = preview;
+  const db = SQLite.openDatabase('G_PicsDB.db');
 
   const DeleteImg = (id) => {
-    SetPictures((pictures) => pictures.filter((pic) => pic.key !== id));
-    Setpreview({});
-    navigation.navigate("Gallery");
+    db.transaction(tx => {
+      tx.executeSql('DELETE FROM images WHERE id = ?', [id], (tx, results) => {
+        if (results.rowsAffected > 0) {
+          
+          Setpreview({});
+          navigation.navigate("Gallery");
+        } else {
+          Alert.alert('Image deletion failed.');
+        }
+      });
+    });
+    
   };
   return (
     <SafeAreaView style={styles.container}>
@@ -23,7 +33,7 @@ const Preview = ({ navigation }) => {
         style={styles.container}
         onPress={() => setShowDelete(ShowDelete ? false : true)}
       >
-        <Image style={styles.container} source={{ uri: img }}></Image>
+        <Image style={styles.container} source={{ uri: data }}></Image>
         {ShowDelete && (
           <Text
             style={{
@@ -34,7 +44,7 @@ const Preview = ({ navigation }) => {
               position: "absolute",
             }}
           >
-            📆 {dateTaken}
+            📆 {capture_date}
           </Text>
         )}
       </Pressable>
@@ -62,7 +72,7 @@ const Preview = ({ navigation }) => {
 
           <View style={{ flexDirection: "row", alignSelf: "center" }}>
             <Ionicons
-              onPress={() => DeleteImg(key)}
+              onPress={() => DeleteImg(id)}
               style={{
                 backgroundColor: "white",
                 borderRadius: 15,
